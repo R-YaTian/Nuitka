@@ -1316,9 +1316,16 @@ orig_argv = argv;
 // Workaround older Python not handling stream setup on redirected files properly.
 #if PYTHON_VERSION >= 0x340 && PYTHON_VERSION < 0x380
     {
+        char const *encoding = NULL;
+
         if (SYSFLAG_UTF8) {
             encoding = "utf-8";
             Py_SetStandardStreamEncoding(encoding, NULL);
+        } else {
+            encoding = getenv("PYTHONIOENCODING");
+            if (encoding != NULL) {
+                Py_SetStandardStreamEncoding(encoding, NULL);
+            }
         }
     }
 #endif

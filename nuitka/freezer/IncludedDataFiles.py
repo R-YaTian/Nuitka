@@ -199,7 +199,7 @@ default_ignored_suffixes = (
     ".so",
     ".pyd",
     ".pyx",
-    ".dll",
+    #".dll",
     ".dylib",
 )
 

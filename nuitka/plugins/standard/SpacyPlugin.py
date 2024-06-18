@@ -75,7 +75,9 @@ include all downloaded models.""",
                         self.used_language_model_names.add(include_language_model_name)
                     else:
                         self.sysexit(
-                            "Error, requested to include language model '%s' that was not found, the list of installed ones is '%s'."
+                            """\
+Error, requested to include language model '%s' that was \
+not found, the list of installed ones is '%s'."""
                             % (
                                 include_language_model_name,
                                 ",".join(self._getInstalledSpaceLanguageModels()),

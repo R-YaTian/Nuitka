@@ -1418,16 +1418,44 @@ static void Nuitka_Generator_tp_dealloc(struct Nuitka_GeneratorObject *generator
     if (PyObject_CallFinalizerFromDealloc((PyObject *)generator)) {
         return;
     }
-#endif
-
-    // Now it is safe to release references and memory for it.
-    Nuitka_GC_UnTrack(generator);
+#else
+    // Revive temporarily.
+    assert(Py_REFCNT(generator) == 0);
+    Py_SET_REFCNT(generator, 1);
 
     PyThreadState *tstate = PyThreadState_GET();
 
     // Save the current exception, if any, we must preserve it.
     struct Nuitka_ExceptionPreservationItem saved_exception_state;
     FETCH_ERROR_OCCURRED_STATE(tstate, &saved_exception_state);
+
+    if (generator->m_status == status_Running) {
+        bool close_result = _Nuitka_Generator_close(tstate, generator);
+        CHECK_OBJECT(generator);
+
+        if (unlikely(close_result == false)) {
+            PyErr_WriteUnraisable((PyObject *)generator);
+        }
+    }
+
+    Nuitka_Generator_release_closure(generator);
+
+    // Allow for above code to resurrect the generator.
+    Py_SET_REFCNT(generator, Py_REFCNT(generator) - 1);
+    if (Py_REFCNT(generator) >= 1) {
+        return;
+    }
+#endif
+
+    // Now it is safe to release references and memory for it.
+    Nuitka_GC_UnTrack(generator);
+
+#if PYTHON_VERSION >= 0x300
+    PyThreadState *tstate = PyThreadState_GET();
+    // Save the current exception, if any, we must preserve it.
+    struct Nuitka_ExceptionPreservationItem saved_exception_state;
+    FETCH_ERROR_OCCURRED_STATE(tstate, &saved_exception_state);
+#endif
 
     Nuitka_Generator_release_closure(generator);
 

@@ -355,6 +355,11 @@ def getDefaultWindowsExecutableManifest():
       <ws2:longPathAware>true</ws2:longPathAware>
     </asmv3:windowsSettings>
   </asmv3:application>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*"/>
+    </dependentAssembly>
+  </dependency>
   %s
 </assembly>
 """

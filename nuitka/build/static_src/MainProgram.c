@@ -1463,14 +1463,13 @@ orig_argv = argv;
 
         if (SYSFLAG_UTF8) {
             encoding = "utf-8";
+            Py_SetStandardStreamEncoding(encoding, NULL);
         } else {
             encoding = getenv("PYTHONIOENCODING");
-            if (encoding == NULL) {
-                encoding = "utf-8";
+            if (encoding != NULL) {
+                Py_SetStandardStreamEncoding(encoding, NULL);
             }
         }
-
-        Py_SetStandardStreamEncoding(encoding, NULL);
     }
 #endif
 
